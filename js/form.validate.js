@@ -49,20 +49,13 @@
 		var _index = {}
 
 
-
-
 		var error = "error";
-
 
 
 		if (options.fields) initDraw(options.fields);
 
 
-
-		function initDraw (obj) {
-
-
-			console.log(obj);
+		function initDraw(obj) {
 
 			jQuery.each(obj, function (key, val) {
 
@@ -102,64 +95,10 @@
 
 		}
 
-		// функция проверки - можно дописывать свои
-
-		var check = function (_type, field) {
-			switch (_type) {
-				case "empty" :
-
-//                     var _emptyReg = /^\s*$/;
-					var _emptyReg = new RegExp("[0-9a-zа-я_]", 'i');
-					var value = field.val();
-					if (!_emptyReg.test(value)) {
-						return false;
-					} else {
-						return true;
-					}
-					break;
-				case "email" :
-					var _emailReg = new RegExp("[0-9a-z_]+@[0-9a-z_^.]+\\.[a-z]{2,3}", 'i');
-					var value = field.val();
-					if (!_emailReg.test(value)) {
-						return false;
-					} else {
-						return true;
-					}
-					break;
-				case "num" :
-					var _emailReg = new RegExp("[0-9]", 'i');
-					var value = field.val();
-					if (!_emailReg.test(value)) {
-						return false;
-					} else {
-						return true;
-					}
-					break;
-				case "date" :
-					var _dateReg = new RegExp("(((0[1-9]|[12][0-9]|3[01])([-./])(0[13578]|10|12)([-./])(\\d{4}))|(([0][1-9]|[12][0-9]|30)([-./])(0[469]|11)([-./])(\\d{4}))|((0[1-9]|1[0-9]|2[0-8])([-./])(02)([-./])(\\d{4}))|((29)(\\.|-|\/)(02)([-./])([02468][048]00))|((29)([-./])(02)([-./])([13579][26]00))|((29)([-./])(02)([-./])([0-9][0-9][0][48]))|((29)([-./])(02)([-./])([0-9][0-9][2468][048]))|((29)([-./])(02)([-./])([0-9][0-9][13579][26])))", 'i');
-					var value = field.val();
-					if (!_dateReg.test(value)) {
-						return false;
-					} else {
-						return true;
-					}
-					break;
-				case "checked" :
-					if (!field.is(":checked")) {
-						return false;
-					} else {
-						return true;
-					}
-					break;
-				default:
-//                     alert(1);
 
 
-			}
-		}
 
-
-		function validator(obj) {
+		function validator(obj, serverErrors) {
 
 
 			validState = false;
@@ -184,52 +123,47 @@
 					_index[key].tooltip.list[val].el.hide();
 
 
-					if (!check(val, _index[key].field.el)) {
+					if (!check(val, _index[key].field.el) || serverErrors) {
 
 						// тут пусть будет вторая поверка не напортачили ли мы с указанием как валидировать поля
 						// если вернуло false
 
-
-						_index[key].tooltip.list[val].el.show();
-						_index[key].tooltip.el.show();
-
-
-						_index[key].field.el.addClass(error);
-
-
-						console.log("оп ошибочка")
+						showErrors(key, val);
 
 						validState = true;
 					}
-					;
-
-
 				})
 
-
 			})
-
 			return validState;
 		}
 
 
+		function showErrors(key, val) {
 
+			_index[key].tooltip.list[val].el.show();
+			_index[key].tooltip.el.show();
+
+
+			_index[key].field.el.addClass(error);
+		}
 
 //время сабмита
 		$(this).on("submit", function () {
 
-			console.log("submit")
+			serverErrors = false;
+			console.log("submit");
 
-			//
+
+			console.log("client valdation");
+
 			if (validator(options.fields)) {
-				console.log("client false")
 
+				console.log("server valdation false");
 				return false;
 			} else {
 
-				console.log("client true")
-
-
+				console.log("server valdation");
 				$.ajax({
 					url: "data.json",
 					dataType: "json",
@@ -239,73 +173,27 @@
 						if (data.error || data.status == 'error') {
 
 
-							jQuery.each(data.error, function (key, val) {
+							if (data.error) {
+
+								options.fields = $.extend(options.fields, data.error)
+
+								initDraw(options.fields);
+							}
 
 
-								_index[key] = {};
+
+							obj = data.error;
+							serverErrors = true;
+							validator(obj, serverErrors);
 
 
-								var f_ = _index[key].field = {};
-								var t_ = _index[key].tooltip = {};
 
-
-								f_.el = _form.find("input[name='" + key + "']");
-								t_.el = $("<b class='error_text'/>").insertAfter(f_.el);
-								t_.list = {};
-
-								//если у поля несколько проверок
-								valArray = val.split(",");
-
-								//для каждогй из критериев своя подсказка
-								jQuery.each(valArray, function (i, val) {
-									var val = val.trim();
-
-
-									f_.cssClass = options.pattern[val].cssClass;
-									t_.cssClass = options.pattern[val].cssClass;
-
-									t_.list[val] = {};
-									t_.list[val].text = options.pattern[val].errorText;
-									t_.list[val].el = $("<i/>").addClass(t_.cssClass).html(t_.list[val].text);
-
-									f_.el.addClass(f_.cssClass);
-									t_.el.addClass(t_.cssClass).append(t_.list[val].el);
-
-
-								})
-							})
-
-
-							var obj = data.error;
-
-							jQuery.each(obj, function (key, val) {
-								valArray = val.split(",");
-
-								jQuery.each(valArray, function (i, val) {
-									var val = val.trim();
-
-									_index[key].tooltip.list[val].el.show();
-									_index[key].tooltip.el.show();
-
-
-									_index[key].field.el.addClass(error);
-
-
-									console.log("оп ошибочка server");
-
-								});
-
-
-							});
-
-
+							console.log("server valdation false");
 						}
 						else {
 
 
 						}
-
-
 					},
 					error: function (response, textStatus) {
 						console.log("fuck");
@@ -313,14 +201,65 @@
 				});
 
 			}
-
-
 			return false;
-
-
 		})
+	}
 
 
+
+
+
+	// функция проверки - можно дописывать свои
+
+	var check = function (_type, field) {
+		switch (_type) {
+			case "empty" :
+
+				var _emptyReg = new RegExp("[0-9a-zа-я_]", 'i');
+				var value = field.val();
+				if (!_emptyReg.test(value)) {
+					return false;
+				} else {
+					return true;
+				}
+				break;
+			case "email" :
+				var _emailReg = new RegExp("[0-9a-z_]+@[0-9a-z_^.]+\\.[a-z]{2,3}", 'i');
+				var value = field.val();
+				if (!_emailReg.test(value)) {
+					return false;
+				} else {
+					return true;
+				}
+				break;
+			case "num" :
+				var _emailReg = new RegExp("[0-9]", 'i');
+				var value = field.val();
+				if (!_emailReg.test(value)) {
+					return false;
+				} else {
+					return true;
+				}
+				break;
+			case "date" :
+				var _dateReg = new RegExp("(((0[1-9]|[12][0-9]|3[01])([-./])(0[13578]|10|12)([-./])(\\d{4}))|(([0][1-9]|[12][0-9]|30)([-./])(0[469]|11)([-./])(\\d{4}))|((0[1-9]|1[0-9]|2[0-8])([-./])(02)([-./])(\\d{4}))|((29)(\\.|-|\/)(02)([-./])([02468][048]00))|((29)([-./])(02)([-./])([13579][26]00))|((29)([-./])(02)([-./])([0-9][0-9][0][48]))|((29)([-./])(02)([-./])([0-9][0-9][2468][048]))|((29)([-./])(02)([-./])([0-9][0-9][13579][26])))", 'i');
+				var value = field.val();
+				if (!_dateReg.test(value)) {
+					return false;
+				} else {
+					return true;
+				}
+				break;
+			case "checked" :
+				if (!field.is(":checked")) {
+					return false;
+				} else {
+					return true;
+				}
+				break;
+			default:
+
+		}
 	}
 
 })(jQuery);
