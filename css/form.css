@@ -1,4 +1,10 @@
-.error_text {
+
+input[type=text], input[type=password] {
+	border: 1px solid #232323;
+}
+
+
+.tooltip {
     display: none;
 }
 .error {
@@ -6,4 +12,19 @@
 }
 .checked {
     border: 5px solid green
+}
+
+
+
+
+
+
+
+
+
+.tooltip {
+	position: absolute;
+	border: 1px solid red;
+	border-radius: 3px;
+	background: #fff;
 }

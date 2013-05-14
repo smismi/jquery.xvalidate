@@ -13,6 +13,8 @@
 		// дефолты поля и паттерны
 		var defaults = {
 			fields: null,
+			tooltipEl: "div",
+			tooltipEl: "div",
 			pattern: {
 				ru: "",
 				en: "",
@@ -68,7 +70,7 @@
 
 
 				f_.el = _form.find("input[name='" + key + "']");
-				t_.el = $("<b class='error_text'/>").insertAfter(f_.el);
+				t_.el = $("<" + options.tooltipEl + " class='tooltip'/>").insertAfter(f_.el);
 				t_.list = {};
 
 				//если у поля несколько проверок
@@ -94,8 +96,6 @@
 			})
 
 		}
-
-
 
 
 		function validator(obj, serverErrors) {
@@ -141,11 +141,35 @@
 
 		function showErrors(key, val) {
 
+
+			var pos = getPosition(key);
+
+
 			_index[key].tooltip.list[val].el.show();
-			_index[key].tooltip.el.show();
+			_index[key].tooltip.el.css({position: "absolute", top: pos.t, left:pos.l + pos.w + 10}).show();
 
 
 			_index[key].field.el.addClass(error);
+		}
+
+
+		function getPosition(key) {
+
+			var _pos = _index[key].field.el.position();
+			var _dim = {
+				_w: _index[key].field.el.width(),
+				_h: _index[key].field.el.height()
+			};
+
+			pos = {
+				t: _pos.top,
+				l: _pos.left,
+				w: _dim._w,
+				h: _dim._h
+
+			}
+
+			return pos;
 		}
 
 //время сабмита
@@ -181,11 +205,9 @@
 							}
 
 
-
 							obj = data.error;
 							serverErrors = true;
 							validator(obj, serverErrors);
-
 
 
 							console.log("server valdation false");
@@ -204,6 +226,20 @@
 			return false;
 		})
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

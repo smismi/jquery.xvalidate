@@ -19,11 +19,11 @@
 </head>
 <body>   
  
-<h1>Список задач</h1>
+<h1>form</h1>
 
 
 <form id="form" action="form.html">
-    <label><input name="name" type="text" value=""/>name</label> <br/>
+    <label><input name="name" type="text" value="" style="width:400px;"/> name</label> <br/>
     <label><input name="password" type="password"/> password</label> <br/>
     <label><input name="remember" type="checkbox"/> remember</label> <br/>
     <label><input name="phone" type="text"/> phone</label> <br/>
@@ -38,7 +38,10 @@
 
 <script type="text/javascript">
     $('#form').xvalidate({
-	    fields: {}
+	    fields: {
+		    name: "empty",
+		    start_date: "date"
+	    }
     });
 </script>
 
