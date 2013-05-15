@@ -4,7 +4,7 @@ input[type=text], input[type=password] {
 }
 
 
-.tooltip {
+.tooltip, .alert {
     display: none;
 }
 .error {

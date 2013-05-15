@@ -14,7 +14,7 @@
 		var defaults = {
 			fields: null,
 			tooltipEl: "div",
-			tooltipEl: "div",
+			alertEl: "div",
 			pattern: {
 				ru: "",
 				en: "",
@@ -48,7 +48,7 @@
 		options = $.extend(defaults, options)
 
 		var _form = $(this);
-		var _index = {}
+		var _index = {};
 
 
 		var error = "error";
@@ -67,11 +67,15 @@
 
 				var f_ = _index[key].field = {};
 				var t_ = _index[key].tooltip = {};
+				var a_ = _index[key].alert = {};
 
 
 				f_.el = _form.find("input[name='" + key + "']");
 				t_.el = $("<" + options.tooltipEl + " class='tooltip'/>").insertAfter(f_.el);
 				t_.list = {};
+
+				a_.el = $("<" + options.alertEl + " class='alert'/>").insertBefore(_form);
+				a_.list = {};
 
 				//если у поля несколько проверок
 				valArray = val.split(",");
@@ -88,8 +92,13 @@
 					t_.list[val].text = options.pattern[val].errorText;
 					t_.list[val].el = $("<i/>").addClass(t_.cssClass).html(t_.list[val].text);
 
+					a_.list[val] = {};
+					a_.list[val].text = options.pattern[val].errorText;
+					a_.list[val].el = $("<i/>").addClass(a_.cssClass).html(a_.list[val].text);
+
 					f_.el.addClass(f_.cssClass);
 					t_.el.addClass(t_.cssClass).append(t_.list[val].el);
+					a_.el.addClass(a_.cssClass).append(a_.list[val].el);
 
 
 				})
@@ -141,15 +150,16 @@
 
 		function showErrors(key, val) {
 
+			_index[key].alert.list[val].el.show();
+			_index[key].alert.el.show();
+
+			_index[key].field.el.addClass(error);
 
 			var pos = getPosition(key);
 
-
-			_index[key].tooltip.list[val].el.show();
 			_index[key].tooltip.el.css({position: "absolute", top: pos.t, left:pos.l + pos.w + 10}).show();
+			_index[key].tooltip.list[val].el.show();
 
-
-			_index[key].field.el.addClass(error);
 		}
 
 
