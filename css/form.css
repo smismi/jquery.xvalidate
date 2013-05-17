@@ -3,6 +3,9 @@ input[type=text], input[type=password] {
 	border: 1px solid #232323;
 }
 
+label {
+	position: relative;
+}
 
 .tooltip, .alert {
     display: none;

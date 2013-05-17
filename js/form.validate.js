@@ -77,6 +77,13 @@
 				a_.el = $("<" + options.alertEl + " class='alert'/>").insertBefore(_form);
 				a_.list = {};
 
+				f_.el.on("keydown", function(){
+
+
+					hideErrors(key);
+
+				});
+
 				//если у поля несколько проверок
 				valArray = val.split(",");
 
@@ -106,6 +113,15 @@
 
 		}
 
+
+		function hideErrors(key) {
+
+
+			_index[key].tooltip.el.hide();
+
+			_index[key].alert.el.hide();
+
+		}
 
 		function validator(obj, serverErrors) {
 
@@ -172,8 +188,8 @@
 			};
 
 			pos = {
-				t: _pos.top,
-				l: _pos.left,
+				t: 0,
+				l: 0,
 				w: _dim._w,
 				h: _dim._h
 
