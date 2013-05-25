@@ -1,7 +1,13 @@
 {
 	"error": {
-	"email": "empty, email",
-	"name": "empty"
-},
-	"status": "error"
+		"email": "empty, email",
+		"name": "empty"
+	},
+	"status": "success"
+}
+
+
+
+{
+	"status": "success"
 }

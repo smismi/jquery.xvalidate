@@ -41,7 +41,23 @@
 	    fields: {
 		    name: "empty",
 		    start_date: "date"
+	    },
+	    onSubmit: function() {
+		    alert("onSubmit");
+	    },
+	    onClientSuccess: function() {
+		    alert("onClientSuccess");
+	    },
+	    onClientError: function() {
+		    alert("onClientError");
+	    },
+	    onServerSuccess: function() {
+		    alert("onServerSuccess");
+	    },
+	    onServerError: function() {
+		    alert("onServerError");
 	    }
+
     });
 </script>
 

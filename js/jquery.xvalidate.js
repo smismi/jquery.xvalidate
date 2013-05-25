@@ -160,6 +160,7 @@
 				})
 
 			})
+
 			return validState;
 		}
 
@@ -201,19 +202,18 @@
 //время сабмита
 		$(this).on("submit", function () {
 
+			options.onSubmit();
+
 			serverErrors = false;
-			console.log("submit");
-
-
-			console.log("client valdation");
 
 			if (validator(options.fields)) {
-
-				console.log("server valdation false");
+ 				options.onClientError();
 				return false;
 			} else {
 
-				console.log("server valdation");
+				options.onClientSuccess();
+
+
 				$.ajax({
 					url: "data.json",
 					dataType: "json",
@@ -235,20 +235,22 @@
 							serverErrors = true;
 							validator(obj, serverErrors);
 
+							options.onServerError();
 
-							console.log("server valdation false");
 						}
 						else {
 
+							options.onServerSuccess();
 
 						}
 					},
 					error: function (response, textStatus) {
-						console.log("fuck");
+						options.onClientError();
 					}
 				});
 
 			}
+
 			return false;
 		})
 	}
